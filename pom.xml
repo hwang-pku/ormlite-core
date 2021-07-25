@@ -222,7 +222,6 @@
 				</executions>
 				<configuration>
 					<showPackage>false</showPackage>
-					<javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
 					<bottom>
 						This documentation is licensed by Gray Watson under the
 						&lt;a
