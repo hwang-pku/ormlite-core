@@ -86,21 +86,14 @@ public class DatabaseFieldConfigTest extends BaseCoreTest {
 	public void testFromDbField() throws Exception {
 		Field[] fields = Foo.class.getDeclaredFields();
 		assertTrue(fields.length >= 1);
-		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 304424649));
+		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", Foo.class.getDeclaredField("field"));
 		assertNotNull(config);
 		assertTrue(config.isCanBeNull());
-		assertEquals(getFieldWithHashCode(fields, 304424649).getName(), config.getFieldName());
+		assertEquals(Foo.class.getDeclaredField("field").getName(), config.getFieldName());
 	}
 
 	private final static String STUFF_FIELD_NAME = "notstuff";
 	private final static int LENGTH_LENGTH = 100;
-	
-	public Field getFieldWithHashCode(Field[] fields, int hashCode) {
-		 for (Field field: fields)
-			 if (field.hashCode() == hashCode)
-				 return field;
-		 return null;
-	}
 
 	@Test
 	public void testJavaxAnnotations() throws Exception {
@@ -108,43 +101,44 @@ public class DatabaseFieldConfigTest extends BaseCoreTest {
 		assertTrue(fields.length >= 7);
 
 		// not a column
-		assertNull(DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 953862680)));
+		assertNull(DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("notColumn")));
 
-		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 165283594));
+		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("id"));
 		assertNotNull(config);
 		assertFalse(config.isId());
 		assertTrue(config.isGeneratedId());
 		assertFalse(config.isUseGetSet());
-		assertEquals(getFieldWithHashCode(fields, 165283594).getName(), config.getFieldName());
+		assertEquals(JavaxAnno.class.getDeclaredField("id").getName(), config.getFieldName());
 
-		config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 256968677));
+		config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("stuff"));
 		assertNotNull(config);
 		assertFalse(config.isUseGetSet());
 		assertEquals(STUFF_FIELD_NAME, config.getColumnName());
 
-		config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, -1210830601));
+		config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("length"));
 		assertNotNull(config);
 		assertEquals(LENGTH_LENGTH, config.getWidth());
 		assertFalse(config.isUseGetSet());
-		assertEquals(getFieldWithHashCode(fields, -1210830601).getName(), config.getFieldName());
+		assertEquals(JavaxAnno.class.getDeclaredField("length").getName(), config.getFieldName());
 
-		config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, -2017512080));
+		config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("nullable"));
 		assertNotNull(config);
 		assertFalse(config.isCanBeNull());
 		assertFalse(config.isUseGetSet());
-		assertEquals(getFieldWithHashCode(fields, -2017512080).getName(), config.getFieldName());
+		assertEquals(JavaxAnno.class.getDeclaredField("nullable").getName(), config.getFieldName());
 
-		config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 165381847));
+		config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("foo"));
 		assertNotNull(config);
 		assertTrue(config.isForeign());
 		assertNull(config.getDataPersister());
-		assertEquals(getFieldWithHashCode(fields, 165381847).getName(), config.getFieldName());
+		assertEquals(JavaxAnno.class.getDeclaredField("foo").getName(), config.getFieldName());
 
-		config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 166331965));
+		config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnno.class.getDeclaredField("foo2"));
+
 		assertNotNull(config);
 		assertTrue(config.isForeign());
 		assertNull(config.getDataPersister());
-		assertEquals(getFieldWithHashCode(fields, 166331965).getName(), config.getFieldName());
+		assertEquals(JavaxAnno.class.getDeclaredField("foo2").getName(), config.getFieldName());
 	}
 
 	@Test
@@ -152,12 +146,12 @@ public class DatabaseFieldConfigTest extends BaseCoreTest {
 		Field[] fields = JavaxAnnoJustId.class.getDeclaredFields();
 		assertTrue(fields.length >= 1);
 
-		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, -991832701));
+		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxAnnoJustId.class.getDeclaredField("id"));
 		assertNotNull(config);
 		assertTrue(config.isId());
 		assertFalse(config.isGeneratedId());
 		assertFalse(config.isUseGetSet());
-		assertEquals(getFieldWithHashCode(fields, -991832701).getName(), config.getFieldName());
+		assertEquals(JavaxAnnoJustId.class.getDeclaredField("id").getName(), config.getFieldName());
 	}
 
 	@Test
@@ -165,10 +159,10 @@ public class DatabaseFieldConfigTest extends BaseCoreTest {
 		Field[] fields = JavaxGetSet.class.getDeclaredFields();
 		assertTrue(fields.length >= 1);
 
-		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 88107732));
+		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxGetSet.class.getDeclaredField("id"));
 		assertNotNull(config);
 		assertTrue(config.isUseGetSet());
-		assertEquals(getFieldWithHashCode(fields, 88107732).getName(), config.getFieldName());
+		assertEquals(JavaxGetSet.class.getDeclaredField("id").getName(), config.getFieldName());
 	}
 
 	@Test
@@ -176,17 +170,17 @@ public class DatabaseFieldConfigTest extends BaseCoreTest {
 		Field[] fields = JavaxUnique.class.getDeclaredFields();
 		assertTrue(fields.length >= 1);
 
-		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 496929647));
+		DatabaseFieldConfig config = DatabaseFieldConfig.fromField(databaseType, "foo", JavaxUnique.class.getDeclaredField("id"));
 		assertNotNull(config);
 		assertTrue(config.isUnique());
-		assertEquals(getFieldWithHashCode(fields, 496929647).getName(), config.getFieldName());
+		assertEquals(JavaxUnique.class.getDeclaredField("id").getName(), config.getFieldName());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testUnknownEnumVal() throws Exception {
 		Field[] fields = BadUnknownVal.class.getDeclaredFields();
 		assertTrue(fields.length >= 1);
-		DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 1079395300));
+		DatabaseFieldConfig.fromField(databaseType, "foo", BadUnknownVal.class.getDeclaredField("ourEnum"));
 	}
 
 	@Test
@@ -202,10 +196,10 @@ public class DatabaseFieldConfigTest extends BaseCoreTest {
 	public void testComboIndex() throws Exception {
 		Field[] fields = ComboIndex.class.getDeclaredFields();
 		assertTrue(fields.length >= 2);
-		DatabaseFieldConfig fieldConfig = DatabaseFieldConfig.fromField(databaseType, "foo", getFieldWithHashCode(fields, 414768163));
+		DatabaseFieldConfig fieldConfig = DatabaseFieldConfig.fromField(databaseType, "foo", ComboIndex.class.getDeclaredField("stuff"));
 		String tableName = "foo";
 		assertEquals(ComboIndex.INDEX_NAME, fieldConfig.getIndexName(tableName));
-		fieldConfig = DatabaseFieldConfig.fromField(databaseType, tableName, getFieldWithHashCode(fields, 503457183));
+		fieldConfig = DatabaseFieldConfig.fromField(databaseType, tableName, ComboIndex.class.getDeclaredField("junk"));
 		assertEquals(ComboIndex.INDEX_NAME, fieldConfig.getIndexName(tableName));
 	}
 
